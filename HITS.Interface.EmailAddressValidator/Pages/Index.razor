@@ -1,0 +1,65 @@
+﻿@page "/"
+
+<h1>Email Validation via QuickEmailVerification</h1>
+<EditForm Model="request" OnSubmit="Validate">
+    <div class="container-fluid mt3">
+        <div class="row mt-3 ml-5">
+            <div class="col-md-3">
+                <h5>Email Address</h5>
+                <InputText id="EmailAddress" @bind-Value="request.EmailAddress" />
+            </div>
+            <div class="col-md-9">
+            </div>
+        </div>
+        <div class="row mt-5 ml-5 ">
+            <div class="col-md-2">
+
+            </div>
+            <div class="col-xl-10">
+                <button type="submit" class="btn btn-primary"> Validate </button>
+            </div>
+        </div>
+        <div class="row mt-5 ml-5 ">
+            <div class="col-md-12">
+                <textarea style="width:400px; height:450px;">@responseString</textarea>
+            </div>
+        </div>
+        <div class="row mt-5 ml-5 ">
+            <div class="col-md-12">
+                <p>@errorMessage</p>
+            </div>
+        </div>
+    </div>
+</EditForm>
+<Validate @ref="validate" />
+
+@code {
+
+    private ValidateEmailRequest request { get; set; } = new ValidateEmailRequest();
+    private string errorMessage { get; set; }
+    private string responseString { get; set; }
+    private string emailAddress { get; set; } = "";
+
+    private Validate validate { get; set; }
+
+    protected override void OnInitialized()
+    {
+        request.ApiKey = "YourApiKey";
+        base.OnInitialized();
+    }
+
+    private async Task Validate()
+    {
+        try
+        {
+            ValidateEmailResponse validateEmailResponse = await validate.ValidateEmailAddressAsync(request);
+            responseString = validateEmailResponse.ToString();
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            errorMessage = ex.Message;
+            StateHasChanged();
+        }
+    }
+}
